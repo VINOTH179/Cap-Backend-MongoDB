@@ -1,3 +1,4 @@
+// server.js
 const express = require("express");
 const mongoose = require('mongoose');
 const cors = require("cors");
@@ -15,6 +16,7 @@ db.once('open', function() {
     console.log('Connected to MongoDB using Mongoose successfully');
 });
 
+// User login endpoint
 app.post("/login", (req, res) => {
     const { email, password } = req.body;
     UserModel.findOne({ email: email })
@@ -23,26 +25,30 @@ app.post("/login", (req, res) => {
             if (user.password === password) {
                 res.json("Success");
             } else {
-                res.json("The Password Is Incorrect");
+                res.status(401).json("The Password Is Incorrect");
             }
         } else {
-            res.json("No Record Existed");
+            res.status(404).json("No Record Existed");
         }
-    });
+    })
+    .catch(err => res.status(500).json({ error: err.message }));
 });
 
+// User registration endpoint
 app.post('/register', (req, res) => {
     UserModel.create(req.body)
-    .then(User => res.json(User))
-    .catch(err => res.json(err));
+    .then(user => res.json(user))
+    .catch(err => res.status(500).json({ error: err.message }));
 });
 
+// Get all booked tickets
 app.get('/booked-tickets', (req, res) => {
     TicketModel.find({})
     .then(tickets => res.json(tickets))
-    .catch(err => res.json(err));
+    .catch(err => res.status(500).json({ error: err.message }));
 });
 
+// Book tickets endpoint
 app.post('/book-tickets', (req, res) => {
     const { screenId, seatIndices } = req.body;
     TicketModel.find({ screenId: screenId, seatIndex: { $in: seatIndices } })
@@ -53,9 +59,10 @@ app.post('/book-tickets', (req, res) => {
             const newTickets = seatIndices.map(index => ({ screenId, seatIndex: index }));
             TicketModel.insertMany(newTickets)
             .then(() => res.json({ success: true }))
-            .catch(err => res.status(500).json(err));
+            .catch(err => res.status(500).json({ error: err.message }));
         }
-    });
+    })
+    .catch(err => res.status(500).json({ error: err.message }));
 });
 
 app.listen(5000, () => {

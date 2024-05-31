@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 
 const TicketSchema = new mongoose.Schema({
-    screenId: Number,
-    seatIndex: Number
+    screenId: { type: Number, required: true },
+    seatIndex: { type: Number, required: true },
 });
 
 const TicketModel = mongoose.model("Ticket", TicketSchema);
