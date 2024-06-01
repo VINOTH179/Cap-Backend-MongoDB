@@ -1,9 +1,8 @@
-// server.js
 const express = require("express");
 const mongoose = require('mongoose');
 const cors = require("cors");
 const UserModel = require('./models/User');
-const TicketModel = require('./models/Ticket'); // Import Ticket model
+const TicketModel = require('./models/Ticket');
 
 const app = express();
 app.use(express.json());
@@ -50,13 +49,13 @@ app.get('/booked-tickets', (req, res) => {
 
 // Book tickets endpoint
 app.post('/book-tickets', (req, res) => {
-    const { screenId, seatIndices } = req.body;
-    TicketModel.find({ screenId: screenId, seatIndex: { $in: seatIndices } })
+    const { movieId, showtime, screenId, seatNumbers } = req.body;
+    TicketModel.find({ screenId: screenId, seatNumber: { $in: seatNumbers }, showtime: showtime })
     .then(existingTickets => {
         if (existingTickets.length > 0) {
             res.status(400).json({ error: "Some of the seats are already booked" });
         } else {
-            const newTickets = seatIndices.map(index => ({ screenId, seatIndex: index }));
+            const newTickets = seatNumbers.map(seatNumber => ({ movieId, showtime, screenId, seatNumber }));
             TicketModel.insertMany(newTickets)
             .then(() => res.json({ success: true }))
             .catch(err => res.status(500).json({ error: err.message }));

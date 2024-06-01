@@ -1,14 +1,9 @@
 const mongoose = require('mongoose');
 
 const BookingSchema = new mongoose.Schema({
-    movieId: { type: String, required: true },
-    showtime: { type: String, required: true },
-    seatNumber: { type: String, required: true },
-}, {
-    timestamps: true
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    tickets: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Ticket' }],
+    // other fields if necessary
 });
 
-BookingSchema.index({ movieId: 1, showtime: 1, seatNumber: 1 }, { unique: true });
-
-const BookingModel = mongoose.model("Booking", BookingSchema);
-module.exports = BookingModel;
+module.exports = mongoose.model('Booking', BookingSchema);
