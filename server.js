@@ -4,6 +4,8 @@ const bcrypt = require('bcrypt');
 const cors = require("cors");
 const UserModel = require('./models/User');
 const TicketModel = require('./models/Ticket');
+const bcrypt = require('bcryptjs');
+
 
 const app = express();
 app.use(express.json());
